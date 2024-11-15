@@ -637,7 +637,7 @@ scene.add(ambientLight);
 //   directionalLight.shadow.camera
 // );
 // scene.add(dLightShadowHelper);
-const spotLight = new _three.SpotLight(0xffffff);
+const spotLight = new _three.SpotLight(0xfff);
 scene.add(spotLight);
 spotLight.position.set(-100, 100, 0);
 spotLight.castShadow = true;
