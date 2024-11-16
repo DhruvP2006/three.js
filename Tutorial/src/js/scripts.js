@@ -2,6 +2,9 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "dat.gui";
 
+import nebula from "../img/nebula.jpg";
+import stars from "../img/stars.jpg";
+
 const renderer = new THREE.WebGLRenderer();
 
 renderer.shadowMap.enabled = true;
@@ -72,7 +75,8 @@ scene.add(ambientLight);
 // );
 // scene.add(dLightShadowHelper);
 
-const spotLight = new THREE.SpotLight(0xfff);
+const spotLight = new THREE.SpotLight(0xffffff);
+spotLight.decay = 0;
 scene.add(spotLight);
 spotLight.position.set(-100, 100, 0);
 spotLight.castShadow = true;
@@ -80,6 +84,44 @@ spotLight.angle = 0.2;
 
 const sLightHelper = new THREE.SpotLightHelper(spotLight);
 scene.add(sLightHelper);
+
+// scene.fog = new THREE.Fog(0xffffff, 0, 200);
+
+// scene.fog = new THREE.FogExp2(0xffffff, 0.01);
+
+// renderer.setClearColor(0xffea00);
+
+const textureLoader = new THREE.TextureLoader();
+// scene.background = textureLoader.load(stars);
+
+const cubeTextureLoader = new THREE.CubeTextureLoader();
+scene.background = cubeTextureLoader.load([
+  nebula,
+  nebula,
+  stars,
+  stars,
+  stars,
+  stars,
+]);
+
+const box2Geometry = new THREE.BoxGeometry(4, 4, 4);
+const box2Material = new THREE.MeshBasicMaterial({
+  // color: 0x00ff00,
+  // map: textureLoader.load(nebula),
+});
+
+const box2MultiMaterial = [
+  new THREE.MeshBasicMaterial({ map: textureLoader.load(stars) }),
+  new THREE.MeshBasicMaterial({ map: textureLoader.load(stars) }),
+  new THREE.MeshBasicMaterial({ map: textureLoader.load(nebula) }),
+  new THREE.MeshBasicMaterial({ map: textureLoader.load(stars) }),
+  new THREE.MeshBasicMaterial({ map: textureLoader.load(nebula) }),
+  new THREE.MeshBasicMaterial({ map: textureLoader.load(stars) }),
+];
+const box2 = new THREE.Mesh(box2Geometry, box2MultiMaterial);
+scene.add(box2);
+box2.position.set(0, 15, 10);
+// box2.material.map = textureLoader.load(nebula);
 
 const gui = new dat.GUI();
 
@@ -108,17 +150,37 @@ gui.add(option, "intensity", 0, 1).onChange(function (e) {});
 
 let step = 0;
 
+const mousePosition = new THREE.Vector2();
+
+window.addEventListener("mousemove", function (e) {
+  mousePosition.x = (e.clientX / window.innerWidth) * 2 - 1;
+  mousePosition.y = (e.clienty / window.innerHeight) * 2 + 1;
+});
+
+const rayCaster = new THREE.Raycaster();
+
+const sphereId = sphere.id;
+
 scene.add(sphere);
 
 function animate(time) {
   box.rotation.x = time / 1000;
   box.rotation.y = time / 1000;
-  renderer.render(scene, camera);
   step += option.speed;
   sphere.position.y = 10 * Math.abs(Math.sin(step));
   spotLight.angle = option.angle;
   spotLight.penumbra = option.penumbra;
   spotLight.intensity = option.intensity;
   sLightHelper.update();
+  rayCaster.setFromCamera(mousePosition, camera);
+  const intersects = rayCaster.intersectObjects(scene.children);
+  console.log(intersects);
+
+  for (let i = 0; i < intersects.length; i++) {
+    if (intersects[i].object.id === sphereId) {
+      intersects[i].object.material.color.set(0xff0000);
+    }
+  }
+  renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);

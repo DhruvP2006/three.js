@@ -585,9 +585,14 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 }
 
 },{}],"goJYj":[function(require,module,exports,__globalThis) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 var _three = require("three");
 var _orbitControlsJs = require("three/examples/jsm/controls/OrbitControls.js");
 var _datGui = require("dat.gui");
+var _nebulaJpg = require("../img/nebula.jpg");
+var _nebulaJpgDefault = parcelHelpers.interopDefault(_nebulaJpg);
+var _starsJpg = require("../img/stars.jpg");
+var _starsJpgDefault = parcelHelpers.interopDefault(_starsJpg);
 const renderer = new _three.WebGLRenderer();
 renderer.shadowMap.enabled = true;
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -637,13 +642,55 @@ scene.add(ambientLight);
 //   directionalLight.shadow.camera
 // );
 // scene.add(dLightShadowHelper);
-const spotLight = new _three.SpotLight(0xfff);
+const spotLight = new _three.SpotLight(0xffffff);
+spotLight.decay = 0;
 scene.add(spotLight);
 spotLight.position.set(-100, 100, 0);
 spotLight.castShadow = true;
 spotLight.angle = 0.2;
 const sLightHelper = new _three.SpotLightHelper(spotLight);
 scene.add(sLightHelper);
+// scene.fog = new THREE.Fog(0xffffff, 0, 200);
+// scene.fog = new THREE.FogExp2(0xffffff, 0.01);
+// renderer.setClearColor(0xffea00);
+const textureLoader = new _three.TextureLoader();
+// scene.background = textureLoader.load(stars);
+const cubeTextureLoader = new _three.CubeTextureLoader();
+scene.background = cubeTextureLoader.load([
+    (0, _nebulaJpgDefault.default),
+    (0, _nebulaJpgDefault.default),
+    (0, _starsJpgDefault.default),
+    (0, _starsJpgDefault.default),
+    (0, _starsJpgDefault.default),
+    (0, _starsJpgDefault.default)
+]);
+const box2Geometry = new _three.BoxGeometry(4, 4, 4);
+const box2Material = new _three.MeshBasicMaterial({
+});
+const box2MultiMaterial = [
+    new _three.MeshBasicMaterial({
+        map: textureLoader.load((0, _starsJpgDefault.default))
+    }),
+    new _three.MeshBasicMaterial({
+        map: textureLoader.load((0, _starsJpgDefault.default))
+    }),
+    new _three.MeshBasicMaterial({
+        map: textureLoader.load((0, _nebulaJpgDefault.default))
+    }),
+    new _three.MeshBasicMaterial({
+        map: textureLoader.load((0, _starsJpgDefault.default))
+    }),
+    new _three.MeshBasicMaterial({
+        map: textureLoader.load((0, _nebulaJpgDefault.default))
+    }),
+    new _three.MeshBasicMaterial({
+        map: textureLoader.load((0, _starsJpgDefault.default))
+    })
+];
+const box2 = new _three.Mesh(box2Geometry, box2MultiMaterial);
+scene.add(box2);
+box2.position.set(0, 15, 10);
+// box2.material.map = textureLoader.load(nebula);
 const gui = new _datGui.GUI();
 const option = {
     sphereColor: "#ffea00",
@@ -664,21 +711,32 @@ gui.add(option, "angle", 0, 1).onChange(function(e) {});
 gui.add(option, "penumbra", 0, 1).onChange(function(e) {});
 gui.add(option, "intensity", 0, 1).onChange(function(e) {});
 let step = 0;
+const mousePosition = new _three.Vector2();
+window.addEventListener("mousemove", function(e) {
+    mousePosition.x = e.clientX / window.innerWidth * 2 - 1;
+    mousePosition.y = e.clienty / window.innerHeight * 2 + 1;
+});
+const rayCaster = new _three.Raycaster();
+const sphereId = sphere.id;
 scene.add(sphere);
 function animate(time) {
     box.rotation.x = time / 1000;
     box.rotation.y = time / 1000;
-    renderer.render(scene, camera);
     step += option.speed;
     sphere.position.y = 10 * Math.abs(Math.sin(step));
     spotLight.angle = option.angle;
     spotLight.penumbra = option.penumbra;
     spotLight.intensity = option.intensity;
     sLightHelper.update();
+    rayCaster.setFromCamera(mousePosition, camera);
+    const intersects = rayCaster.intersectObjects(scene.children);
+    console.log(intersects);
+    for(let i = 0; i < intersects.length; i++)if (intersects[i].object.id === sphereId) intersects[i].object.material.color.set(0xff0000);
+    renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(animate);
 
-},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls.js":"7mqRv","dat.gui":"8hNZA"}],"ktPTu":[function(require,module,exports,__globalThis) {
+},{"three":"ktPTu","three/examples/jsm/controls/OrbitControls.js":"7mqRv","dat.gui":"8hNZA","../img/nebula.jpg":"gJrE5","../img/stars.jpg":"ateIT","@parcel/transformer-js/src/esmodule-helpers.js":"aMb31"}],"ktPTu":[function(require,module,exports,__globalThis) {
 /**
  * @license
  * Copyright 2010-2024 Three.js Authors
@@ -35665,6 +35723,47 @@ var index = {
 };
 exports.default = index;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"aMb31"}]},["euBcB","goJYj"], "goJYj", "parcelRequire94c2")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"aMb31"}],"gJrE5":[function(require,module,exports,__globalThis) {
+module.exports = require("f840df568291d61b").getBundleURL('6gfNw') + "nebula.c76a1d24.jpg" + "?" + Date.now();
+
+},{"f840df568291d61b":"9d0bb"}],"9d0bb":[function(require,module,exports,__globalThis) {
+"use strict";
+var bundleURL = {};
+function getBundleURLCached(id) {
+    var value = bundleURL[id];
+    if (!value) {
+        value = getBundleURL();
+        bundleURL[id] = value;
+    }
+    return value;
+}
+function getBundleURL() {
+    try {
+        throw new Error();
+    } catch (err) {
+        var matches = ('' + err.stack).match(/(https?|file|ftp|(chrome|moz|safari-web)-extension):\/\/[^)\n]+/g);
+        if (matches) // The first two stack frames will be this function and getBundleURLCached.
+        // Use the 3rd one, which will be a runtime in the original bundle.
+        return getBaseURL(matches[2]);
+    }
+    return '/';
+}
+function getBaseURL(url) {
+    return ('' + url).replace(/^((?:https?|file|ftp|(chrome|moz|safari-web)-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
+}
+// TODO: Replace uses with `new URL(url).origin` when ie11 is no longer supported.
+function getOrigin(url) {
+    var matches = ('' + url).match(/(https?|file|ftp|(chrome|moz|safari-web)-extension):\/\/[^/]+/);
+    if (!matches) throw new Error('Origin not found');
+    return matches[0];
+}
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+exports.getOrigin = getOrigin;
+
+},{}],"ateIT":[function(require,module,exports,__globalThis) {
+module.exports = require("38e2fd9cd5c047c4").getBundleURL('6gfNw') + "stars.4ef120fd.jpg" + "?" + Date.now();
+
+},{"38e2fd9cd5c047c4":"9d0bb"}]},["euBcB","goJYj"], "goJYj", "parcelRequire94c2")
 
 //# sourceMappingURL=index.6f6f1761.js.map
