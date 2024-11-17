@@ -691,6 +691,28 @@ const box2 = new _three.Mesh(box2Geometry, box2MultiMaterial);
 scene.add(box2);
 box2.position.set(0, 15, 10);
 // box2.material.map = textureLoader.load(nebula);
+const Plane2Geometry = new _three.PlaneGeometry(10, 10, 10, 10);
+const Plane2Material = new _three.MeshBasicMaterial({
+    color: 0xffffff,
+    wireframe: true
+});
+const Plane2 = new _three.Mesh(Plane2Geometry, Plane2Material);
+const lastPointZ = Plane2.geometry.attributes.position.array.length - 1;
+scene.add(Plane2);
+const sphere2Geometry = new _three.SphereGeometry(4);
+const vShader = `void main(){
+gl_Position = projectionMatrix *  modelViewMatrix * vec4(position, 1.0);}`;
+const fShader = `void main(){
+gl_FragColor = vec4(0.5, 0.5, 1.0, 1.0);
+}`;
+const sphere2Material = new _three.ShaderMaterial({
+    vertexShader: document.getElementById("vertexShader").textContent,
+    fragmentShader: document.getElementById("fragmentShader").textContent
+});
+const sphere2 = new _three.Mesh(sphere2Geometry, sphere2Material);
+scene.add(sphere2);
+sphere2.position.set(-5, 10, 10);
+Plane2.position.set(10, 10, 15);
 const gui = new _datGui.GUI();
 const option = {
     sphereColor: "#ffea00",
@@ -714,10 +736,11 @@ let step = 0;
 const mousePosition = new _three.Vector2();
 window.addEventListener("mousemove", function(e) {
     mousePosition.x = e.clientX / window.innerWidth * 2 - 1;
-    mousePosition.y = e.clienty / window.innerHeight * 2 + 1;
+    mousePosition.y = -(e.clientY / window.innerHeight) * 2 + 1;
 });
 const rayCaster = new _three.Raycaster();
 const sphereId = sphere.id;
+box2.name = "theBox";
 scene.add(sphere);
 function animate(time) {
     box.rotation.x = time / 1000;
@@ -730,9 +753,19 @@ function animate(time) {
     sLightHelper.update();
     rayCaster.setFromCamera(mousePosition, camera);
     const intersects = rayCaster.intersectObjects(scene.children);
-    console.log(intersects);
-    for(let i = 0; i < intersects.length; i++)if (intersects[i].object.id === sphereId) intersects[i].object.material.color.set(0xff0000);
+    for(let i = 0; i < intersects.length; i++){
+        if (intersects[i].object.id === sphereId) intersects[i].object.material.color.set(0xff0000);
+        if (intersects[i].object.name === "theBox") {
+            intersects[i].object.rotation.x = time / 1000;
+            intersects[i].object.rotation.y = time / 1000;
+        }
+    }
     renderer.render(scene, camera);
+    Plane2.geometry.attributes.position.array[0] = 10 * Math.random();
+    Plane2.geometry.attributes.position.array[1] = 10 * Math.random();
+    Plane2.geometry.attributes.position.array[2] = 10 * Math.random();
+    Plane2.geometry.attributes.position.array[lastPointZ] = 10 * Math.random();
+    Plane2.geometry.attributes.position.needsUpdate = true;
 }
 renderer.setAnimationLoop(animate);
 
