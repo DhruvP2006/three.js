@@ -1,9 +1,12 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import * as dat from "dat.gui";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 import nebula from "../img/nebula.jpg";
 import stars from "../img/stars.jpg";
+
+const monkeyUrl = new URL("../assests/monkey.glb", import.meta.url);
 
 const renderer = new THREE.WebGLRenderer();
 
@@ -149,6 +152,21 @@ const sphere2 = new THREE.Mesh(sphere2Geometry, sphere2Material);
 scene.add(sphere2);
 sphere2.position.set(-5, 10, 10);
 
+const assetLoader = new GLTFLoader();
+
+assetLoader.load(
+  monkeyUrl.href,
+  function (gltf) {
+    const model = gltf.scene;
+    scene.add(model);
+    model.position.set(-12, 4, 10);
+  },
+  undefined,
+  function (error) {
+    console.error(error);
+  }
+);
+
 Plane2.position.set(10, 10, 15);
 
 const gui = new dat.GUI();
@@ -224,3 +242,9 @@ function animate(time) {
   Plane2.geometry.attributes.position.needsUpdate = true;
 }
 renderer.setAnimationLoop(animate);
+
+window.addEventListener("resize", function () {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix;
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
