@@ -23,19 +23,29 @@ const orbit = new OrbitControls(camera, renderer.domElement);
 camera.position.set(0, 20, -30);
 orbit.update();
 
-const world = new CANNON.World();
+const groundGeo = new THREE.PlaneGeometry(30, 30);
+const groundMat = new THREE.MeshBasicMaterial({
+  color: 0xffffff,
+  side: THREE.DoubleSide,
+  wireframe: true,
+});
+
+const groundMesh = new THREE.Mesh(groundGeo, groundMat);
+scene.add(groundMesh);
+
+const world = new CANNON.World({
+  gravity: new CANNON.Vec3(0, -9.81, 0),
+});
+
+const groundBody = new CANNON.Body({ shape: new CANNON.Plane() });
+world.addBody(groundBody);
+
+const timeStep = 1 / 60;
+
 function animate() {
   world.step(timeStep);
-
   groundMesh.position.copy(groundBody.position);
   groundMesh.quaternion.copy(groundBody.quaternion);
-
-  boxMesh.position.copy(boxBody.position);
-  boxMesh.quaternion.copy(boxBody.quaternion);
-
-  sphereMesh.position.copy(sphereBody.position);
-  sphereMesh.quaternion.copy(sphereBody.quaternion);
-
   renderer.render(scene, camera);
 }
 

@@ -1,5 +1,5 @@
 {
-  "name": "cannon",
+  "name": "solar_system_2",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "cannon-es": "^0.20.0",
-    "three": "^0.171.0"
+    "three": "^0.172.0"
+  },
+  "devDependencies": {
+    "parcel": "^2.13.3"
   }
 }

@@ -86,8 +86,8 @@ function createPlanet(size, texture, position, ring) {
   return { mesh, obj };
 }
 
-const mercury = createPlanet(3.2, venusTexture, 28);
-const venus = createPlanet(3.2, venusTexture, 28);
+const mercury = createPlanet(3.2, mercuryTexture, 28);
+const venus = createPlanet(5.8, venusTexture, 44);
 const earth = createPlanet(6, earthTexture, 62);
 const mars = createPlanet(4, marsTexture, 78);
 const jupiter = createPlanet(12, jupiterTexture, 100);
